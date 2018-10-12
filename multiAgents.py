@@ -72,7 +72,12 @@ class ReflexAgent(Agent):
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-
+        print "STATE"
+        print "Successor State" , successorGameState
+        print "New Position", newPos
+        print "New Food", newFood
+        print "Ghost States", newGhostStates
+        print "New Scared Times", newScaredTimes
         "*** YOUR CODE HERE ***"
         return successorGameState.getScore()
 
