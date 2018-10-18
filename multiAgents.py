@@ -70,16 +70,53 @@ class ReflexAgent(Agent):
         successorGameState = currentGameState.generatePacmanSuccessor(action)
         newPos = successorGameState.getPacmanPosition()
         newFood = successorGameState.getFood()
+        currentGhostStates = currentGameState.getGhostStates()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-        print "STATE"
-        print "Successor State" , successorGameState
-        print "New Position", newPos
-        print "New Food", newFood
-        print "Ghost States", newGhostStates
-        print "New Scared Times", newScaredTimes
+        newFood = newFood.asList()
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        reflexTotal = successorGameState.getScore()
+        currGhostDist = 0
+        newGhostDist = 0
+        closestFood = float('inf')
+        
+        # If the proposed successor is a win, return current score plus score for a win
+        if successorGameState.isWin():
+          return currentGameState.getScore() + 500
+
+        # If the proposed successor is a loss, return zero
+        if successorGameState.isLose():
+          return 0
+        
+        # Calculate distance to ghosts in current and successor states:
+        # Trying to "get away from the ghosts", so return higher value if successor is farther away
+        for i in range(1,len(currentGhostStates)):
+          currGhostDist += util.manhattanDistance(currentGameState.getPacmanPosition(),currentGameState.getGhostPosition(i))
+        
+        for i in range(1,len(newGhostStates)):
+          newGhostDist += util.manhattanDistance(newPos,successorGameState.getGhostPostion())
+
+        if newGhostDist >= currGhostDist:
+          reflexTotal += 100
+
+        # Find the closest food and subtract it from total:
+        # this is equivalent to rewarding states which move closer to the food
+        for food in newFood:
+          foodDist = util.manhattanDistance(newPos,food)
+          if foodDist < closestFood:
+            closestFood = foodDist
+
+        reflexTotal -= closestFood
+
+        # Heavily penalize pacman for doing nothing; time is $$
+        if action == Directions.STOP:
+          reflexTotal -= 100
+
+        # Give greater value to successors if pacman eats a food in that step
+        if len(newFood)< len((currentGameState.getFood()).asList()):
+          reflexTotal += 100
+
+        return reflexTotal
 
 def scoreEvaluationFunction(currentGameState):
     """
