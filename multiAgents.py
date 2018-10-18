@@ -97,7 +97,7 @@ class ReflexAgent(Agent):
           newGhostDist += util.manhattanDistance(newPos,successorGameState.getGhostPostion())
 
         if newGhostDist >= currGhostDist:
-          reflexTotal += 100
+          reflexTotal += 500
 
         # Find the closest food and subtract it from total:
         # this is equivalent to rewarding states which move closer to the food
@@ -106,15 +106,15 @@ class ReflexAgent(Agent):
           if foodDist < closestFood:
             closestFood = foodDist
 
-        reflexTotal -= closestFood
+        reflexTotal -= 10*closestFood
 
         # Heavily penalize pacman for doing nothing; time is $$
         if action == Directions.STOP:
-          reflexTotal -= 100
+          reflexTotal -= 500
 
         # Give greater value to successors if pacman eats a food in that step
         if len(newFood)< len((currentGameState.getFood()).asList()):
-          reflexTotal += 100
+          reflexTotal += 500
 
         return reflexTotal
 
