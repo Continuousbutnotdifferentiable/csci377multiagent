@@ -182,14 +182,14 @@ class MinimaxAgent(MultiAgentSearchAgent):
               v = float("-inf")
               for action in gameState.getLegalActions(agent):
                 successor = gameState.generateSuccessor(agent,action)
-                if max(v,miniMax(successor,action,agent,depth)) == miniMax(successor,action,agent,depth):
+                if max(v,miniMax(successor,action,agent,depth+1)) == miniMax(successor,action,agent,depth+1):
                   actioneer = action
             elif agent >= 0:
               v = float("inf")
               for action in gameState.getLegalActions(agent):
                 successor = gameState.generateSuccessor(agent,action)
                 if agent == (gameState.getNumAgents()-1):
-                  if min(v,miniMax(successor,action,agent,depth+1)) == miniMax(successor,action,agent,depth+1):
+                  if min(v,miniMax(successor,action,agent,depth)) == miniMax(successor,action,agent,depth):
                     actioneer = action 
                 else:
                   if min(v,miniMax(successor,action,agent,depth)) == miniMax(successor,action,agent,depth):

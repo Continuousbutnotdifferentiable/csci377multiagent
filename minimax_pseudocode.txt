@@ -1,0 +1,31 @@
+def minimax(M,q,p,eval,cutoff):
+    if cutoff(q): #if depth is reached, or if state is terminal
+        return eval(q)
+    bestEval = {
+        -inf if p(q) == max
+         inf otherwise
+    }
+    for successor in <state,transition,successor>:
+        successorEval = minimax(m,q',po,eval,cutoff)
+        if p(q) = max bestEval = max(bestEval,successorEval)
+        else          bestEval = min(bestEval,successorEval)
+    return bestEval    
+
+alpha = -inf
+beta = inf
+def alphabeta(M,q,p,eval,cutoff,alpha,beta):
+    if cutoff(q): #if depth is reached, or if state is terminal
+        return eval(q)
+    bestEval = {
+        -inf if p(q) == max
+         inf otherwise
+    }
+    for successor in <state,transition,successor>:
+        if alpha >= beta:
+            return bestEval
+        successorEval = minimax(m,q',po,eval,cutoff)
+        if p(q) = max bestEval = max(bestEval,successorEval)
+            alpha = max(alpha,successorEval)
+        else          bestEval = min(bestEval,successorEval)
+            beta = min(beta,successorEval)
+    return bestEval    
