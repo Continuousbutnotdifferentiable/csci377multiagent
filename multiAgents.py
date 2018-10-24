@@ -171,13 +171,32 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        def miniMax(gameState):
-          if state.isWin() or state.isLose() or depth == self.depth:
-            value = self.evaluationFunction(gameState)
-        def minFunc(gameState,depth):
-        def maxFunc(gameState,depth):
-          
-        return miniMax(gameState,0,0)
+        initDepth = 0
+        initAction = Directions.STOP
+        initAgent = 0
+        def miniMax(gameState,action,agent,depth):
+          if gameState.isWin() or gameState.isLose() or (depth == self.depth and agent == (gameState.getNumAgents()-1)):
+            return self.evaluationFunction(gameState)
+          for agent in range(0,gameState.getNumAgents()):
+            if agent == 0:
+              v = float("-inf")
+              for action in gameState.getLegalActions(agent):
+                successor = gameState.generateSuccessor(agent,action)
+                if max(v,miniMax(successor,action,agent,depth)) == miniMax(successor,action,agent,depth):
+                  actioneer = action
+            elif agent >= 0:
+              v = float("inf")
+              for action in gameState.getLegalActions(agent):
+                successor = gameState.generateSuccessor(agent,action)
+                if agent == (gameState.getNumAgents()-1):
+                  if min(v,miniMax(successor,action,agent,depth+1)) == miniMax(successor,action,agent,depth+1):
+                    actioneer = action 
+                else:
+                  if min(v,miniMax(successor,action,agent,depth)) == miniMax(successor,action,agent,depth):
+                    actioneer = action 
+          return actioneer
+
+        return miniMax(gameState,initAction,initAgent,initDepth)
         util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
