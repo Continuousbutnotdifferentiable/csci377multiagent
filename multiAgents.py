@@ -171,7 +171,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        initDepth = 0
+        initDepth = 1
         initAction = Directions.STOP
         initAgent = 0
         def miniMax(gameState,action,agent,depth):
