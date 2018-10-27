@@ -314,7 +314,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           bestEval[1] = action
       return bestEval
 
-    # Function for min nodes
+    # Expectation function for minagents
     def expectaMinFunc(self,state,depth,player):
       expectaMin = 0
       for action in state.getLegalActions(player):
