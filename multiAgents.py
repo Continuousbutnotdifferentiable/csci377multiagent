@@ -171,38 +171,116 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        initDepth = 1
-        initAction = Directions.STOP
-        initAgent = 0
-        def miniMax(state,action,agent,depth):
-          if depth % gameState.getNumAgents() == self.depth or state.isLose() or state.isWin():
-            return [self.evaluationFunction,action]
-          if agent == 0:
-            bestEval = float("inf")
-          else:
-            bestEval = float("-inf")
-          for agents in range(0,gameState.getNumAgents()):
-            for actions in gameState.getLegalActions(agents):
-              successorState = gameState.generateSuccessor(agent)
-              successorEval = miniMax(successorState,actions,agents,depth)
-                if agents != 0 and agents:
-                  bestEval = max(bestEval,successorState)
-
-        return miniMax(gameState,initAction,initAgent,initDepth)
+        firstPlayer = 0
+        firstDepth = 0 
+        action = self.maxFunc(gameState,firstDepth,firstPlayer)[1]
+        return action
         util.raiseNotDefined()
+
+    # Function for max nodes
+    def maxFunc(self,state,depth,player):
+      bestEval = [float("-inf"),Directions.STOP]
+      for action in state.getLegalActions(player):
+        successorState = state.generateSuccessor(player,action)
+        successorDepth = depth + 1
+        successorAgent = (depth + 1) % state.getNumAgents()
+        successorEval = self.stateEvaluate(successorState,successorDepth,successorAgent)
+        if max(bestEval[0],successorEval) == successorEval:
+          bestEval[0] = successorEval
+          bestEval[1] = action
+      return bestEval
+
+    # Function for min nodes
+    def minFunc(self,state,depth,player):
+      bestEval = [float("inf"),Directions.STOP]
+      for action in state.getLegalActions(player):
+        successorState = state.generateSuccessor(player,action)
+        successorDepth = depth + 1
+        successorAgent = (depth + 1) % state.getNumAgents()
+        successorEval = self.stateEvaluate(successorState,successorDepth,successorAgent)
+        if min(bestEval[0],successorEval) == successorEval:
+          bestEval[0] = successorEval
+          bestEval[1] = action
+      return bestEval
+
+    # This handles the partitioning of min/maxes amoung ghosts
+    def stateEvaluate(self,state,depth,player):
+      if self.cutoff(state,depth):
+        return self.evaluationFunction(state)
+      elif player == 0:
+        return self.maxFunc(state,depth,player)[0]
+      else:
+        return self.minFunc(state,depth,player)[0]
+
+    # Tests whether a state is terminal 
+    def cutoff(self,state,depth):
+      if (depth >= state.getNumAgents()*self.depth) or state.isWin() or state.isLose():
+        return True
+      return False
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
       Your minimax agent with alpha-beta pruning (question 3)
     """
-
     def getAction(self, gameState):
         """
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        
-        util.raiseNotDefined()
+        firstPlayer = 0
+        firstDepth = 0 
+        alpha = float("-inf")
+        beta = float("inf")
+        action = self.maxFuncAB(gameState,firstDepth,firstPlayer,alpha,beta)[1]
+        return action
+
+    # Function for max nodes
+    def maxFuncAB(self,state,depth,player,alpha,beta):
+      bestEval = [float("-inf"),Directions.STOP]
+      for action in state.getLegalActions(player):
+        successorState = state.generateSuccessor(player,action)
+        successorDepth = depth + 1
+        successorAgent = (depth + 1) % state.getNumAgents()
+        successorEval = self.stateEvaluate(successorState,successorDepth,successorAgent,alpha,beta)
+        if max(bestEval[0],successorEval) == successorEval:
+          bestEval[0] = successorEval
+          bestEval[1] = action
+        if successorEval > beta:
+          return bestEval
+        alpha = max(alpha,successorEval)
+      return bestEval
+
+    # Function for min nodes
+    def minFuncAB(self,state,depth,player,alpha,beta):
+      bestEval = [float("inf"),Directions.STOP]
+      for action in state.getLegalActions(player):
+        successorState = state.generateSuccessor(player,action)
+        successorDepth = depth + 1
+        successorAgent = (depth + 1) % state.getNumAgents()
+        successorEval = self.stateEvaluate(successorState,successorDepth,successorAgent,alpha,beta)
+        if min(bestEval[0],successorEval) == successorEval:
+          bestEval[0] = successorEval
+          bestEval[1] = action
+        if successorEval < alpha:
+          return bestEval
+        beta = min(beta,successorEval)
+      return bestEval
+
+    # This handles the partitioning of min/maxes amoung ghosts
+    def stateEvaluate(self,state,depth,player,alpha,beta):
+      if self.cutoff(state,depth):
+        return self.evaluationFunction(state)
+      elif player == 0:
+        return self.maxFuncAB(state,depth,player,alpha,beta)[0]
+      else:
+        return self.minFuncAB(state,depth,player,alpha,beta)[0]
+
+    # Tests whether a state is terminal 
+    def cutoff(self,state,depth):
+      if (depth >= state.getNumAgents()*self.depth) or state.isWin() or state.isLose():
+        return True
+      return False  
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
@@ -217,8 +295,51 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
+        firstPlayer = 0
+        firstDepth = 0 
+        action = self.maxFunc(gameState,firstDepth,firstPlayer)[1]
+        return action
         util.raiseNotDefined()
 
+    # Function for max nodes
+    def maxFunc(self,state,depth,player):
+      bestEval = [float("-inf"),Directions.STOP]
+      for action in state.getLegalActions(player):
+        successorState = state.generateSuccessor(player,action)
+        successorDepth = depth + 1
+        successorAgent = (depth + 1) % state.getNumAgents()
+        successorEval = self.stateEvaluate(successorState,successorDepth,successorAgent)
+        if max(bestEval[0],successorEval) == successorEval:
+          bestEval[0] = successorEval
+          bestEval[1] = action
+      return bestEval
+
+    # Function for min nodes
+    def expectaMinFunc(self,state,depth,player):
+      expectaMin = 0
+      for action in state.getLegalActions(player):
+        successorState = state.generateSuccessor(player,action)
+        successorDepth = depth + 1
+        successorAgent = (depth + 1) % state.getNumAgents()
+        successorEval = self.stateEvaluate(successorState,successorDepth,successorAgent)
+        expectaMin += successorEval
+      expectaVal = expectaMin/len(state.getLegalActions(player)) 
+      return expectaVal
+
+    # This handles the partitioning of min/maxes amoung ghosts
+    def stateEvaluate(self,state,depth,player):
+      if self.cutoff(state,depth):
+        return self.evaluationFunction(state)
+      elif player == 0:
+        return self.maxFunc(state,depth,player)[0]
+      else:
+        return self.expectaMinFunc(state,depth,player)
+
+    # Tests whether a state is terminal 
+    def cutoff(self,state,depth):
+      if (depth >= state.getNumAgents()*self.depth) or state.isWin() or state.isLose():
+        return True
+      return False
 def betterEvaluationFunction(currentGameState):
     """
       Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
