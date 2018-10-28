@@ -207,10 +207,10 @@ class MinimaxAgent(MultiAgentSearchAgent):
     def stateEvaluate(self,state,depth,player):
       if self.cutoff(state,depth):
         return self.evaluationFunction(state)
-      elif player == 0:
-        return self.maxFunc(state,depth,player)[0]
-      else:
+      elif player != 0:
         return self.minFunc(state,depth,player)[0]
+      else:
+        return self.maxFunc(state,depth,player)[0]
 
     # Tests whether a state is terminal 
     def cutoff(self,state,depth):
@@ -271,10 +271,10 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     def stateEvaluate(self,state,depth,player,alpha,beta):
       if self.cutoff(state,depth):
         return self.evaluationFunction(state)
-      elif player == 0:
-        return self.maxFuncAB(state,depth,player,alpha,beta)[0]
-      else:
+      elif player != 0:
         return self.minFuncAB(state,depth,player,alpha,beta)[0]
+      else:
+        return self.maxFuncAB(state,depth,player,alpha,beta)[0]
 
     # Tests whether a state is terminal 
     def cutoff(self,state,depth):
@@ -330,10 +330,10 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     def stateEvaluate(self,state,depth,player):
       if self.cutoff(state,depth):
         return self.evaluationFunction(state)
-      elif player == 0:
-        return self.maxFunc(state,depth,player)[0]
-      else:
+      elif player != 0:
         return self.expectaMinFunc(state,depth,player)
+      else:
+        return self.maxFunc(state,depth,player)[0]
 
     # Tests whether a state is terminal 
     def cutoff(self,state,depth):
@@ -348,6 +348,26 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
+    successorGameState = currentGameState.generatePacmanSuccessor(action)
+    newPos = successorGameState.getPacmanPosition()
+    newFood = successorGameState.getFood()
+    currentGhostStates = currentGameState.getGhostStates()
+    newGhostStates = successorGameState.getGhostStates()
+    newCapsules = successorGameState.getCapsules()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+    newFood = newFood.asList()
+    if successorGameState.isWin():
+      winPoint = 500
+    
+    for i in range(1,len(currentGhostStates)):
+      currGhostDist += util.manhattanDistance(currentGameState.getPacmanPosition(),currentGameState.getGhostPosition(i))
+        
+    for i in range(1,len(newGhostStates)):
+      newGhostDist += util.manhattanDistance(newPos,successorGameState.getGhostPostion())
+
+    ghostPoints = -(currentGhostDist - newGhostDist)
+    
+      
     util.raiseNotDefined()
 
 # Abbreviation
