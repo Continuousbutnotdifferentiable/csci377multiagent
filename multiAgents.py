@@ -348,27 +348,55 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    successorGameState = currentGameState.generatePacmanSuccessor(action)
-    newPos = successorGameState.getPacmanPosition()
-    newFood = successorGameState.getFood()
-    currentGhostStates = currentGameState.getGhostStates()
-    newGhostStates = successorGameState.getGhostStates()
-    newCapsules = successorGameState.getCapsules()
-    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-    newFood = newFood.asList()
-    if successorGameState.isWin():
-      winPoint = 500
-    
-    for i in range(1,len(currentGhostStates)):
-      currGhostDist += util.manhattanDistance(currentGameState.getPacmanPosition(),currentGameState.getGhostPosition(i))
-        
-    for i in range(1,len(newGhostStates)):
-      newGhostDist += util.manhattanDistance(newPos,successorGameState.getGhostPostion())
+    if currentGameState.isWin():
+      return float("inf")
+    if currentGameState.isLose():
+      return float("-inf")
 
-    ghostPoints = -(currentGhostDist - newGhostDist)
+    evalUe = 0
+    ghostValue = 0
+    currentPacmanPosition = currentGameState.getPacmanPosition()
+    currentCapsules = currentGameState.getCapsules()
+    currentFood = currentGameState.getFood()
+    currentGhostStates = currentGameState.getGhostStates()
+    currentFood = currentFood.asList()
+    scaredTimes = [ghostState.scaredTimer for ghostState in currentGhostStates]
+    if sum(scaredTimes) > 0:
+      for i in range(1,len(currentGhostStates)+1):
+        ghostCloseness += util.manhattanDistance(currentPacmanPosition,currentGameState.getGhostPosition(i))
+      ghostValue = -(ghostCloseness*(1/sum(scaredTimes)))
+      
+    
+    minFood = float("inf")
+    for i in range(0,len(currentFood)):
+      if util.manhattanDistance(currentPacmanPosition,currentFood[i]) < minFood:
+        minFood = util.manhattanDistance(currentPacmanPosition,currentFood[i])
+
+    foodValue = minFood/ currentGameState.getNumFood()
+    
+    minCapsule = float("inf")
+    minCapsuleLocation = None
+    
+    for i in range(0,len(currentCapsules)):
+      if util.manhattanDistance(currentPacmanPosition,currentCapsules[i]) < minCapsule:
+        minCapsule = util.manhattanDistance(currentPacmanPosition,currentCapsules[i])
+        minCapsuleLocation = currentCapsules[i]
+
+    pacDistToCapsule = util.manhattanDistance(currentPacmanPosition,minCapsuleLocation)
+    
+    print scaredTimes
+    ghostCloseness = 0
+    for i in range(1,len(currentGhostStates)+1):
+      ghostCloseness += util.manhattanDistance(minCapsuleLocation,currentGameState.getGhostPosition(i))
+    
+    capsuleValue = (ghostCloseness*minCapsule)/pacDistToCapsule
+    
+    return evalUe - foodValue - capsuleValue + ghostValue
+
     
       
     util.raiseNotDefined()
+
 
 # Abbreviation
 better = betterEvaluationFunction
